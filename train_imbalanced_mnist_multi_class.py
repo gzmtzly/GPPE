@@ -20,12 +20,22 @@ batch_size = 100
 num_class = 10
 
 '''
-minority_class:  输入少数类的标签值
+majority_class:  input majority class
 '''
-maj_class = [1,3,5,7,9]
-data_pare = 'even_class'
-data_num = '5000'
-abs_path = './create_imbalaced_mnist/' + data_pare
+
+minority_class = 'former_5'
+if minority_class == 'former_5':  #  former_5 or even_class
+    majority_class = [5, 6, 7, 8, 9]
+elif minority_class == 'even_class':
+    majority_class = [1, 3, 5, 7, 9]
+else:
+    print('error minority_class!')
+
+print('minority_class:', minority_class)
+print('majority_class:', majority_class)
+
+data_num = '3000'
+abs_path = './create_imbalaced_mnist/' + minority_class
 abs_path_train = abs_path + '/50_' + data_num
 
 train_data_path = abs_path_train + '/imbalanced_x.npy'
@@ -36,12 +46,10 @@ test_label_path = abs_path + '/eval_y.npy'
 # Loss_fun = "CE"
 # Loss_fun = "FL"
 # Loss_fun = "ASL"
-# Loss_fun = "CL"
-# Loss_fun = "FTL"
-# Loss_fun = "HFL"
 Loss_fun = 'GPPE'
 
-train_times = 5
+
+train_times = 1
 
 if Loss_fun == 'CE':
     Loss = nn.CrossEntropyLoss().cuda()
@@ -52,18 +60,6 @@ elif Loss_fun == 'FL':
 elif Loss_fun == 'ASL':
     Loss = Loss_Function.ASLSingleLabel().cuda()
     save_confu_path = abs_path + '/50_' + data_num + '/result/result_ASL/' + str(train_times) + '/'
-elif Loss_fun == 'DSCL':
-    Loss = Loss_Function.MultiDSCLoss().cuda()
-    save_confu_path = abs_path + '/50_' + data_num + '/result/result_DSCL/' + str(train_times) + '/'
-elif Loss_fun == 'CL':
-    Loss = Loss_Function.Combo_Loss().cuda()
-    save_confu_path = abs_path + '/50_' + data_num + '/result/result_CL/' + str(train_times) + '/'
-elif Loss_fun == 'FTL':
-    Loss = Loss_Function.Focal_Tversky_Loss().cuda()
-    save_confu_path = abs_path + '/50_' + data_num + '/result/result_FTL/' + str(train_times) + '/' ## ???
-elif Loss_fun == 'HFL':
-    Loss = Loss_Function.Hybrid_Focal_Loss().cuda()
-    save_confu_path = abs_path + '/50_' + data_num + '/result/result_HFL/' + str(train_times) + '/'
 else:
     Loss = Loss_Function.GPPE_Multi_Class().cuda()
     save_confu_path = abs_path + '/50_' + data_num + '/result/result_GPPE/' + str(train_times) + '/'
@@ -101,11 +97,12 @@ test_num_bathces = math.ceil(test_data.shape[0] / batch_size)
 print(test_num_bathces)
 
 device = torch.device('cuda')
-model = utils.Model(num_class=num_class).to(device=device)
+model = utils.Model_Mnist(num_class=num_class).to(device=device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.5, 0.999))
+# CM = np.array([[1000, 1000], [1000, 1000]])
 
 
-maj_min_express = [0 if train_label[i] in maj_class else 1 for i in range(len(train_label))]
+maj_min_express = [0 if train_label[i] in majority_class else 1 for i in range(len(train_label))]
 maj_min_express = Variable(torch.from_numpy(np.array(maj_min_express)).long()).cuda()
 maj_min_express = maj_min_express.view(-1, 1)
 
@@ -125,7 +122,7 @@ if __name__ == "__main__":
             data = Variable(torch.from_numpy(data).float()).cuda()
             label = Variable(torch.from_numpy(label).long()).cuda()
 
-            # 梯度清零
+         
             optimizer.zero_grad()
             output_label = model(data)
             if Loss_fun == 'GPPE':
@@ -133,6 +130,8 @@ if __name__ == "__main__":
             else:
                 loss = Loss(output_label, label)
 
+            # loss = Loss(output_label, label)
+            # loss = Loss(output_label, label, maj_min_express_)
             loss.backward()
             optimizer.step()
 
@@ -149,14 +148,15 @@ if __name__ == "__main__":
         predict_label_cpu = np.int32(predict_label.cpu().numpy())
         Acc = metrics.accuracy_score(te_label, predict_label.data.cpu().numpy())
         Confu_matir = confusion_matrix(te_label, predict_label_cpu, labels=[0,1,2,3,4,5,6,7,8,9])
-        print('ACC:', Acc)
+        print('ACC_all:', Acc)
 
-        if epoch > 30:
+        if epoch > 90:
             np.save(save_confu_path + 'Confu_matir_' + str(epoch) + '.npy', Confu_matir)
             np.save(save_confu_path + 'predicted_probility_' + str(epoch) + '.npy', pi_1_cpu)
             np.save(save_confu_path + 'target_' + str(epoch) + '.npy', te_label)
 
         print(Confu_matir)
+
 
 
 

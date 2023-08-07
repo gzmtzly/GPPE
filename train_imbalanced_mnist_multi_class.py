@@ -156,7 +156,3 @@ if __name__ == "__main__":
             np.save(save_confu_path + 'target_' + str(epoch) + '.npy', te_label)
 
         print(Confu_matir)
-
-
-
-

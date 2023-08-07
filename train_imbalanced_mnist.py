@@ -22,8 +22,8 @@ minority_class:
 '''
 minority_class = 3
 
-data_pare = '3_8'
-data_num = '5000'
+data_pare = '3_5'
+data_num = '3000'
 abs_path = './create_imbalaced_mnist/' + data_pare
 abs_path_train = abs_path + '/50_' + data_num
 
@@ -38,10 +38,10 @@ test_label_path = abs_path + '/imb_eval_y.npy'
 # Loss_fun = "DSCL"
 # Loss_fun = "CL"
 # Loss_fun = "HFL"
-# Loss_fun = 'GPPE'
-Loss_fun = "FTL"      # Focal_Tversky_Loss
+Loss_fun = 'GPPE'
+# Loss_fun = "FTL"      # Focal_Tversky_Loss
 
-train_times = 5
+train_times = 1
 
 if Loss_fun == 'CE':
     Loss = nn.CrossEntropyLoss().cuda()
@@ -74,18 +74,18 @@ print('save_confu_path:', save_confu_path)
 
 train_data = np.load(train_data_path)
 train_label = np.load(train_label_path)
-
-train_label = np.array([1 if train_label[i] == minority_class else 0 for i in range(len(train_label))])
 print(Counter(train_label))
 
+train_label = np.array([1 if train_label[i] == minority_class else 0 for i in range(len(train_label))])
 
 
 test_data = np.load(test_data_path)
 test_label = np.load(test_label_path)
-test_label = np.array([1 if test_label[i] == minority_class else 0 for i in range(len(test_label))])
 print(Counter(test_label))
 
-# 随机打乱
+test_label = np.array([1 if test_label[i] == minority_class else 0 for i in range(len(test_label))])
+
+# random shuffle 
 ssl_data_seed = 1
 rng_data = np.random.RandomState(ssl_data_seed)
 
@@ -109,7 +109,7 @@ print(test_num_bathces)
 
 
 device = torch.device('cuda')
-model = utils.Model().to(device=device)
+model = utils.Model_Mnist().to(device=device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.5, 0.999))
 
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
         predict_label_cpu = np.int32(predict_label.cpu().numpy())
         Confu_matir = confusion_matrix(te_label, predict_label_cpu, labels=[0, 1])
 
-        if epoch > 30:
+        if epoch > 90:
             np.save(save_confu_path + 'Confu_matir_'+str(epoch)+'.npy', Confu_matir)
             np.save(save_confu_path + 'predicted_probility_' + str(epoch) + '.npy', pi_1_cpu)
             np.save(save_confu_path + 'target_' + str(epoch) + '.npy', te_label)

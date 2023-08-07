@@ -74,14 +74,14 @@ print('save_confu_path:', save_confu_path)
 
 train_data = np.load(train_data_path)
 train_label = np.load(train_label_path)
-print(Counter(train_label))
+print('train:', Counter(train_label))
 
 train_label = np.array([1 if train_label[i] == minority_class else 0 for i in range(len(train_label))])
 
 
 test_data = np.load(test_data_path)
 test_label = np.load(test_label_path)
-print(Counter(test_label))
+print('test:', Counter(test_label))
 
 test_label = np.array([1 if test_label[i] == minority_class else 0 for i in range(len(test_label))])
 

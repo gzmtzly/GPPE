@@ -1,6 +1,6 @@
 # @Time    : 10/11/22 12:01 AM
 # @Author  : Zhou-Lin-yong
-# @File    : Trian_imbalanced_cifar10.py
+# @File    : Train_imbalanced_cifar10.py
 # @SoftWare: PyCharm
 import time, Model, math
 import numpy as np

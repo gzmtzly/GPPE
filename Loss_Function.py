@@ -32,17 +32,15 @@ class GPPE(nn.Module):
         xs_neg_before = 1 - xs_pos
         xs_neg = 1 - xs_pos
 
-        # Asymmetric Clipping
+
         if self.clip is not None and self.clip > 0:
             xs_neg = (xs_neg + self.clip).clamp(max=1)
 
-        # Basic CE calculation
         los_pos = y * torch.log(xs_pos.clamp(min=self.eps))
 
         los_neg = (1 - y) * torch.log(xs_neg.clamp(min=self.eps))
         loss = los_pos + los_neg
 
-        # Asymmetric Focusing
         if self.alpha_neg > 0 or self.beta_neg > 0 or self.gamma_pos > 0:
             if self.disable_torch_grad_focal_loss:
                 torch.set_grad_enabled(False)
@@ -87,7 +85,7 @@ class GPPE_Multi_Class(nn.Module):
         # maj_min_express = maj_min_express.view(-1, 1)
 
         target = target.view(-1, 1)
-        probility = F.softmax(input, dim=1)  # softmax前面做一次log操作log(pt)
+        probility = F.softmax(input, dim=1)  
         probility = probility.gather(1, target)
 
         xs_neg = (probility + self.clip).clamp(max=1)

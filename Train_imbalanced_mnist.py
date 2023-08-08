@@ -2,7 +2,7 @@
 # @Author  : Zhou-Lin-yong
 # @File    : train_imbalanced_mnist.py
 # @SoftWare: PyCharm
-import time, utils, math
+import time, Model, math
 import numpy as np
 import torch
 import torch.nn as nn
@@ -17,9 +17,6 @@ import Loss_Function
 batch_size = 100
 num_class = 2
 
-'''
-minority_class:  
-'''
 minority_class = 3
 
 data_pare = '3_5'
@@ -85,7 +82,7 @@ print('test:', Counter(test_label))
 
 test_label = np.array([1 if test_label[i] == minority_class else 0 for i in range(len(test_label))])
 
-# random shuffle 
+# shuffle 
 ssl_data_seed = 1
 rng_data = np.random.RandomState(ssl_data_seed)
 
@@ -109,7 +106,7 @@ print(test_num_bathces)
 
 
 device = torch.device('cuda')
-model = utils.Model_Mnist().to(device=device)
+model = Model.Model_Mnist().to(device=device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.5, 0.999))
 
 
@@ -127,7 +124,6 @@ if __name__ == "__main__":
             data = Variable(torch.from_numpy(data).float()).cuda()
             label = Variable(torch.from_numpy(label).long()).cuda()
 
-            # 梯度清零
             optimizer.zero_grad()
             output_label = model(data)
             loss = Loss(output_label, label)

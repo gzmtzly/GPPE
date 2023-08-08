@@ -19,8 +19,8 @@ import os
 batch_size = 100
 num_class = 10
 
-minority_class = 'former_5'
-if minority_class == 'former_5':  #  former_5 or even_class
+minority_class = 'former_5'  #  former_5 or even_class
+if minority_class == 'former_5':  
     majority_class = [5, 6, 7, 8, 9]
 elif minority_class == 'even_class':
     majority_class = [1, 3, 5, 7, 9]

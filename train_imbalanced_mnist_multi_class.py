@@ -1,8 +1,8 @@
 # @Time    : 4/12/23 3:35 PM
 # @Author  : Zhou-Lin-yong
-# @File    : train_imbalanced_mnist_multi_class.py
+# @File    : Train_imbalanced_mnist_multi_class.py
 # @SoftWare: PyCharm
-import time, utils, math
+import time, Model, math
 import numpy as np
 import torch
 import torch.nn as nn
@@ -18,10 +18,6 @@ import os
 
 batch_size = 100
 num_class = 10
-
-'''
-majority_class:  input majority class
-'''
 
 minority_class = 'former_5'
 if minority_class == 'former_5':  #  former_5 or even_class
@@ -75,7 +71,7 @@ test_data = np.load(test_data_path)
 test_label = np.load(test_label_path)
 print(Counter(test_label))
 
-# 随机打乱
+# shuffle
 ssl_data_seed = 1
 rng_data = np.random.RandomState(ssl_data_seed)
 
@@ -97,10 +93,8 @@ test_num_bathces = math.ceil(test_data.shape[0] / batch_size)
 print(test_num_bathces)
 
 device = torch.device('cuda')
-model = utils.Model_Mnist(num_class=num_class).to(device=device)
+model = Model.Model_Mnist(num_class=num_class).to(device=device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.5, 0.999))
-# CM = np.array([[1000, 1000], [1000, 1000]])
-
 
 maj_min_express = [0 if train_label[i] in majority_class else 1 for i in range(len(train_label))]
 maj_min_express = Variable(torch.from_numpy(np.array(maj_min_express)).long()).cuda()
@@ -130,8 +124,6 @@ if __name__ == "__main__":
             else:
                 loss = Loss(output_label, label)
 
-            # loss = Loss(output_label, label)
-            # loss = Loss(output_label, label, maj_min_express_)
             loss.backward()
             optimizer.step()
 

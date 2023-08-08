@@ -72,7 +72,7 @@ train_label = np.array([1 if train_label[i] == minority_class else 0 for i in ra
 
 test_data = np.load(test_data_path)
 test_label = np.load(test_label_path)
-print('train:', Counter(test_label))
+print('test:', Counter(test_label))
 
 test_label = np.array([1 if test_label[i] == minority_class else 0 for i in range(len(test_label))])
 

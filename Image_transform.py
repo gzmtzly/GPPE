@@ -1,3 +1,7 @@
+# @Time    : 4/25/23 9:33 AM
+# @Author  : Zhou-Lin-yong
+# @File    : Image_transform.py
+# @SoftWare: PyCharm
 from imutils import paths
 import read_caltech101
 from collections import Counter
@@ -5,22 +9,19 @@ from sklearn.model_selection import train_test_split
 from torchvision.transforms import transforms
 from torch.utils.data import DataLoader, Dataset
 
-image_paths = list(paths.list_images('../data/caltech-101/101_ObjectCategories'))
+image_paths = list(paths.list_images('./caltech101_data/101_ObjectCategories'))
 data, name2label, labels = read_caltech101.data_processor(image_paths, size=65)
 print(Counter(labels))
 # Counter({44: 800, 89: 798, 29: 435, 82: 435, 30: 239, 49: 200, 69: 128, 4: 123, 17: 114, 83: 107, 26: 100…………})
-# print(len(labels))
 
 
 train_transform = transforms.Compose(
     [transforms.ToPILImage(),
-     # transforms.Resize((224, 224)),
      transforms.ToTensor(),
      transforms.Normalize(mean=[0.485, 0.456, 0.406],
                           std=[0.229, 0.224, 0.225])])
 val_transform = transforms.Compose(
     [transforms.ToPILImage(),
-     # transforms.Resize((224, 224)),
      transforms.ToTensor(),
      transforms.Normalize(mean=[0.485, 0.456, 0.406],
                           std=[0.229, 0.224, 0.225])])

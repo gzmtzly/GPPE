@@ -2,25 +2,25 @@
 # @Author  : Zhou-Lin-yong
 # @File    : Trian_imbalanced_cifar10.py
 # @SoftWare: PyCharm
-import time, utils_imb_cifar10, math
+import time, Model, math
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
 from sklearn.metrics import confusion_matrix, roc_auc_score, average_precision_score
 from collections import Counter
-import Loss_Function_
+import Loss_Function
 import sklearn.metrics as metrics
 import torch.nn.functional as F
 batch_size = 100
 num_class = 2
 
 '''
-minority_class:  输入少数类的标签值
+minority_class:  input minority class
 '''
 minority_class = 3
 data_pare = '3_8'
-data_num = '1000'
+data_num = '3000'
 abs_path = './create_imbalaced_cifar10/' + data_pare
 abs_path_train = abs_path + '/500_' + data_num
 
@@ -43,22 +43,22 @@ if Loss_fun == 'CE':
     Loss = nn.CrossEntropyLoss().cuda()
     save_confu_path = abs_path + '/500_' + data_num + '/result/result_CE/' + str(train_times) + '/'
 elif Loss_fun == 'FL':
-    Loss = Loss_Function_.Focal_Loss().cuda()
+    Loss = Loss_Function.Focal_Loss().cuda()
     save_confu_path = abs_path + '/500_' + data_num + '/result/result_FL/' + str(train_times) + '/'
 elif Loss_fun == 'ASL':
-    Loss = Loss_Function_.ASLSingleLabel().cuda()
+    Loss = Loss_Function.ASLSingleLabel().cuda()
     save_confu_path = abs_path + '/500_' + data_num + '/result/result_ASL/' + str(train_times) + '/'
 elif Loss_fun == 'CL':
-    Loss = Loss_Function_.Combo_Loss().cuda()
+    Loss = Loss_Function.Combo_Loss().cuda()
     save_confu_path = abs_path + '/500_' + data_num + '/result/result_CL/' + str(train_times) + '/'
 elif Loss_fun == 'FTL':
-    Loss = Loss_Function_.Focal_Tversky_Loss_2().cuda()
-    save_confu_path = abs_path + '/500_' + data_num + '/result/result_FTL/' + str(train_times) + '/' ## ???
+    Loss = Loss_Function.Focal_Tversky_Loss_2().cuda()
+    save_confu_path = abs_path + '/500_' + data_num + '/result/result_FTL/' + str(train_times) + '/' 
 elif Loss_fun == 'HFL':
-    Loss = Loss_Function_.Hybrid_Focal_Loss().cuda()
+    Loss = Loss_Function.Hybrid_Focal_Loss().cuda()
     save_confu_path = abs_path + '/500_' + data_num + '/result/result_HFL/' + str(train_times) + '/'
 else:
-    Loss = Loss_Function_.GPPE().cuda()
+    Loss = Loss_Function.GPPE().cuda()
     save_confu_path = abs_path + '/500_' + data_num + '/result/result_GPPE/' + str(train_times) + '/'
 
 print('Loss:', Loss)
@@ -74,7 +74,7 @@ test_label = np.load(test_label_path)
 test_label = np.array([1 if test_label[i] == minority_class else 0 for i in range(len(test_label))])
 print(Counter(test_label))
 
-# 随机打乱
+# shuffle
 ssl_data_seed = 1
 rng_data = np.random.RandomState(ssl_data_seed)
 
@@ -91,7 +91,7 @@ test_num_bathces = math.ceil(test_data.shape[0] / batch_size)
 print(test_num_bathces)
 
 device = torch.device('cuda')
-model = utils_imb_cifar10.Model_Cifar10(num_class).to(device=device)
+model = Model.Model_Cifar10(num_class).to(device=device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.5, 0.999))
 
 if __name__ == "__main__":
@@ -108,9 +108,8 @@ if __name__ == "__main__":
 
             data = Variable(torch.from_numpy(data).float()).cuda()
             label = Variable(torch.from_numpy(label).long()).cuda()
-            # print('label:', label.shape)
 
-            # 梯度清零
+            
             optimizer.zero_grad()
 
             output_label = model(data)
@@ -160,9 +159,9 @@ if __name__ == "__main__":
         print('F_score:', f_score)
         print('AUC:', AUC)
         print('AP:', AP)
-        print('&'*70)
+        print('&'*50)
 
-        if epoch > EPOCH - 80:
+        if epoch > 90:
             np.save(save_confu_path + 'Confu_matir_' + str(epoch) + '.npy', Confu_matir)
             np.save(save_confu_path + 'predicted_probility_' + str(epoch) + '.npy', probility_predicted)
             np.save(save_confu_path + 'target_' + str(epoch) + '.npy', ground_truth_valid)

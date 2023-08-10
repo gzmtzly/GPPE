@@ -1,6 +1,6 @@
 # @Time    : 2/23/21 3:42 PM
 # @Author  : Zhou-Lin-yong
-# @File    : train_imbalanced_mnist.py
+# @File    : Train_imbalanced_mnist.py
 # @SoftWare: PyCharm
 import time, Model, math
 import numpy as np

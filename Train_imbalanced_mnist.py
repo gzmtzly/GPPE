@@ -20,7 +20,7 @@ num_class = 2
 minority_class = 3
 
 data_pare = '3_5'
-data_num = '5000'
+data_num = '3000'
 abs_path = './create_imbalaced_mnist/' + data_pare
 abs_path_train = abs_path + '/50_' + data_num
 

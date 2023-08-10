@@ -28,7 +28,7 @@ Loss_Function.py | computing GPPE loss
 Model.py | training models on different dataset     
 utils.py | computing metrics
 ### 3.2. Launch the Training
-After downloading the code and corresponding data, execute python Train_xxxx.py to launch the training. It should be noted that the code contains binary dataset on MNIST, so “Train_imbalanced_mnist.py” can be executed directly.
+After downloading the code and corresponding data, execute "python Train_xxxx.py" to launch the training. It should be noted that the code contains binary dataset on MNIST, so “Train_imbalanced_mnist.py” can be executed directly.
 ## 4. Acknowledgments
 Thank the authors of ASL for providing their code. Our code is widely adapted from their repositories.
 
